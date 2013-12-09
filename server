@@ -1,0 +1,46 @@
+
+/**
+ * Configuration
+ */
+var file = "examples/rmllocal.ttl";
+
+/*****************************************************************************/
+var restify = require('restify'),
+    fs = require("fs"),
+    n3 = require('n3');
+
+var parser = n3.StreamParser();
+var server = restify.createServer();
+
+/**
+ * Get all triples
+ */
+function getTriples(file, callback){
+  var turtleStream = fs.createReadStream(file);
+  var triples = [];
+  turtleStream.pipe(parser);
+  parser.on("data", function (triple) {
+    triples.push(triple);
+  }).on("end", function () { 
+    callback(triples);
+  });
+}
+
+/**
+ * Respond with all triples
+ */
+server.get('/', function (req, res, next) {
+  getTriples(file, function(triples){
+                                   
+    //triples.forEach(function (triple) {
+      
+    res.send(triples);
+    //});
+
+  });
+});
+
+
+server.listen(8080, function() {
+  console.log('%s listening at %s', server.name, server.url);
+});
