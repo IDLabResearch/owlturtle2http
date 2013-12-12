@@ -1,22 +1,25 @@
+#!/usr/bin/env nodejs
 
 /**
  * Configuration
  */
-var file = "examples/rmllocal.ttl";
-
+var files = {
+  "rml" : "examples/rmllocal.ttl"
+};
 /*****************************************************************************/
-var restify = require('restify'),
+var express = require('express'),
     fs = require("fs"),
-    n3 = require('n3');
+    n3 = require('n3'),
+    owlttl2html = require('./lib/owlttl2html.js');
 
-var parser = n3.StreamParser();
-var server = restify.createServer();
+var server = express();
 
 /**
  * Get all triples
  */
 function getTriples(file, callback){
   var turtleStream = fs.createReadStream(file);
+  var parser = n3.StreamParser();
   var triples = [];
   turtleStream.pipe(parser);
   parser.on("data", function (triple) {
@@ -29,18 +32,28 @@ function getTriples(file, callback){
 /**
  * Respond with all triples
  */
-server.get('/', function (req, res, next) {
-  getTriples(file, function(triples){
-                                   
-    //triples.forEach(function (triple) {
-      
-    res.send(triples);
-    //});
-
-  });
+server.get('/ns/:name', function (req, res) {
+  var name = req.route.params.name;
+  if (typeof files[name]  !== 'undefined') {
+    var file = files[name];
+    var format = req.accepts('text/html','application/ttl','application/json');
+    if ( format === "text/html" ) {
+      res.send(owlttl2html(file));
+    } else if ( format === "application/ttl" ) {
+      var turtleStream = fs.createReadStream(file);
+      res.download(file,name + ".ttl");
+    } else if ( format === "application/json" ) {
+      getTriples(file, function(triples){
+        res.send(triples);
+      });
+    } else {
+      res.send("Not acceptable");
+    }
+  } else {
+    res.send("404, nothing here.");
+  }
 });
 
-
 server.listen(8080, function() {
-  console.log('%s listening at %s', server.name, server.url);
+  console.log('Server listening at http://localhost:8080');
 });
