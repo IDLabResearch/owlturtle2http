@@ -10,7 +10,7 @@ var files = {
 var express = require('express'),
     fs = require("fs"),
     n3 = require('n3'),
-    owlttl2html = require('./lib/owlttl2html.js');
+    owl2html = require('./lib/owl2html.js');
 
 var server = express();
 
@@ -34,24 +34,36 @@ function getTriples(file, callback){
  */
 server.get('/ns/:name', function (req, res) {
   var name = req.route.params.name;
-  if (typeof files[name]  !== 'undefined') {
-    var file = files[name];
-    var format = req.accepts('text/html','application/ttl','application/json');
-    if ( format === "text/html" ) {
-      res.send(owlttl2html(file));
-    } else if ( format === "application/ttl" ) {
-      var turtleStream = fs.createReadStream(file);
-      res.download(file,name + ".ttl");
-    } else if ( format === "application/json" ) {
-      getTriples(file, function(triples){
-        res.send(triples);
-      });
+  //check if name exists on the directory
+  fs.exists(name, function(exists) {
+    if (!exists) {
+      //handle file through nodejs
+      if (typeof files[name]  !== 'undefined') {
+        var file = files[name];
+        var format = req.accepts('text/html','application/ttl','application/json');
+        if ( format === "text/html" ) {
+          getTriples(file, function(triples){
+            res.send(owl2html(triples));
+          });
+        } else if ( format === "application/ttl" ) {
+          var turtleStream = fs.createReadStream(file);
+          res.download(file,name + ".ttl");
+        } else if ( format === "application/json" ) {
+          getTriples(file, function(triples){
+            res.send(triples);
+          });
+        } else {
+          res.status(406).send("Not acceptable. We do accept: text/html, application/ttl and application/json");
+        }
+      } else {
+        res.status(404).send("Nothing here");
+      }
     } else {
-      res.send("Not acceptable");
+      //handle file through file instead
+      res.download(name);
     }
-  } else {
-    res.send("404, nothing here.");
-  }
+  });
+  
 });
 
 server.listen(8080, function() {
