@@ -4,7 +4,8 @@
  * Configuration
  */
 var files = {
-  "rml" : "examples/rmllocal.ttl"
+  "rml" : "examples/rmllocal.ttl",
+  "apps4X" : "examples/a4eulocal.ttl"
 };
 /*****************************************************************************/
 var express = require('express'),

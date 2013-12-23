@@ -19,7 +19,7 @@
 	rdf:type <http://purl.org/vocommons/voaf#Vocabulary> ;
 	dc:issued "2013-07-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
 	dc:modified "2013-11-15"^^<http://www.w3.org/2001/XMLSchema#date> ;
-	dc:descripion "Generic Mapping Language for RDF (RDB/CSV/TSV/XML/JSON to RDF) - Vocabulary description"@en ;
+	dc:description "Generic Mapping Language for RDF (RDB/CSV/TSV/XML/JSON to RDF) - Vocabulary description"@en ;
 	dc:creator 
       	     [ foaf:name "Anastasia Dimou" ], [ foaf:name "Miel Vander Sande"];
 	cc:license <http://creativecommons.org/licenses/by/3.0/> ;

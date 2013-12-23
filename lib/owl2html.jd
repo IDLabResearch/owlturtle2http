@@ -2,19 +2,20 @@ doctype 5
 html(lang="en")
   head
     title= pageTitle
-    script(type='text/javascript').
-      if (foo) {
-         bar(1 + 5)
-      }
   body
-    h1 Jade - node template engine
+    h1= pageTitle
     #container.col
-      if youAreUsingJade
-        p You are amazing
-      else
-        p Get on it!
-      p.
-        Jade is a terse and simple
-        templating language with a
-        strong focus on performance
-        and powerful features.
+      p= description
+      h2 Classes
+         - var classes = triples.getUrisOfType("http://www.w3.org/2002/07/owl#Class").concat(triples.getUrisOfType("http://www.w3.org/2000/01/rdf-schema#Class"));
+         - for (var i = 0 ; i < classes.length ; i ++) 
+           - var comment = triples.getLiterals(classes[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
+             h3= classes[i]
+             p(id="class"+i)= comment
+      h2 Object Properties
+         - var objectproperties = triples.getUrisOfType("http://www.w3.org/2002/07/owl#ObjectProperty").concat(triples.getUrisOfType("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"));
+         - for (var i = 0 ; i < objectproperties.length ; i ++)
+             h3= objectproperties[i]
+             -var comment = triples.getLiterals(objectproperties[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
+             p(id="class"+i)= comment 
+           
