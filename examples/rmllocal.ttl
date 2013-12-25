@@ -10,8 +10,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix : <http://localhost:8080/rml/> .
-@base <http://localhost:8080/rml/> .
+@prefix : <http://localhost:8080/ns/rml/> .
+@base <http://localhost:8080/ns/rml/> .
 
 <> 	rdf:type owl:Ontology ;
 	rdf:type <http://purl.org/vocommons/voaf#Vocabulary> ;
@@ -24,7 +24,7 @@
       	     [ foaf:name "Anastasia Dimou" ], [ foaf:name "Miel Vander Sande"];
 	cc:license <http://creativecommons.org/licenses/by/3.0/> ;
 	vann:preferredNamespacePrefix "rml" ;
-	vann:preferredNamespaceUri "http://localhost:8080/rml/";
+	vann:preferredNamespaceUri "http://localhost:8080/ns/rml/";
       owl:imports <http://www.w3.org/ns/r2rml#>.
         
 

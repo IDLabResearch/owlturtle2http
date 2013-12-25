@@ -30,6 +30,8 @@ function getTriples(file, callback){
   });
 }
 
+server.use("/ns/assets",express.static(process.cwd() + '/public'));
+
 /**
  * Respond with all triples
  */
@@ -48,7 +50,7 @@ server.get('/ns/:name', function (req, res) {
           });
         } else if ( format === "application/ttl" ) {
           var turtleStream = fs.createReadStream(file);
-          res.download(file,name + ".ttl");
+          res.download(file, name + ".ttl");
         } else if ( format === "application/json" ) {
           getTriples(file, function(triples){
             res.send(triples);

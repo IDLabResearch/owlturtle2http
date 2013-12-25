@@ -1,21 +1,54 @@
 doctype 5
 html(lang="en")
   head
-    title= pageTitle
+    title=pageTitle
+    link(rel='stylesheet', href='./assets/css/bootstrap.min.css')
+    link(rel='stylesheet', href='./assets/css/bootstrap-theme.min.css')
+    link(rel='stylesheet', href='./assets/css/style.css')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='./assets/js/bootstrap.min.js')
   body
-    h1= pageTitle
-    #container.col
-      p= description
-      h2 Classes
-         - var classes = triples.getUrisOfType("http://www.w3.org/2002/07/owl#Class").concat(triples.getUrisOfType("http://www.w3.org/2000/01/rdf-schema#Class"));
-         - for (var i = 0 ; i < classes.length ; i ++) 
-           - var comment = triples.getLiterals(classes[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
-             h3= classes[i]
-             p(id="class"+i)= comment
-      h2 Object Properties
-         - var objectproperties = triples.getUrisOfType("http://www.w3.org/2002/07/owl#ObjectProperty").concat(triples.getUrisOfType("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"));
-         - for (var i = 0 ; i < objectproperties.length ; i ++)
-             h3= objectproperties[i]
-             -var comment = triples.getLiterals(objectproperties[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
-             p(id="class"+i)= comment 
-           
+    .container
+      .header
+        h3(class='text-muted')=pageTitle
+      div(class='jumbotron')
+        p(class=lead)= description
+        - if (ontology.issued)
+          p(id="issued",class="col-lg-6")
+            label issued: 
+            =ontology.issued
+        - if (ontology.modified)
+          p(id="modified",class="col-lg-6")
+            label modified: 
+            =ontology.modified
+      div(class=['row','marketing'])
+        .col-lg-12
+          label Created By
+          ul(id="creators")
+            - for (var i = 0 ; i < creators.length; i++)
+              li=triples.getLiterals(creators[i],"http://xmlns.com/foaf/0.1/name")[0]
+
+        .col-lg-12
+          h2 Classes
+            - var classes = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#Class", "http://www.w3.org/2000/01/rdf-schema#Class"]);
+            - for (var i = 0 ; i < classes.length ; i ++) 
+              - var matches = /[^#]+[#\/](.+)/.exec(classes[i]);
+              - var name = matches?matches[1]:classes[i];
+              - var comment = triples.getLiterals(classes[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
+              h3(id=name)
+                a(href=classes[i])=name
+              p= comment
+        .col-lg-12
+          h2 Properties
+            - var properties = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#ObjectProperty","http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"]);
+            - for (var i = 0 ; i < properties.length ; i ++)
+              - var matches = /[^#]+[#\/](.+)/.exec(properties[i]);
+              - var name = matches?matches[1]:properties[i];
+              h3(id=name)
+                a(href=properties[i])=name
+              -var comment = triples.getLiterals(properties[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
+              p= comment 
+      .footer
+        p &copy 2013 MMLab - Ghent University - Written by 
+          a(href='mailto:pieter.colpaert@ugent.be') Pieter Colpaert 
+        
