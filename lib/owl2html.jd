@@ -40,7 +40,7 @@ html(lang="en")
               p= comment
         .col-lg-12
           h2 Properties
-            - var properties = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#ObjectProperty","http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"]);
+            - var properties = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#ObjectProperty","http://www.w3.org/2002/07/owl#DatatypeProperty","http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"]);
             - for (var i = 0 ; i < properties.length ; i ++)
               - var matches = /[^#]+[#\/](.+)/.exec(properties[i]);
               - var name = matches?matches[1]:properties[i];
@@ -67,6 +67,18 @@ html(lang="en")
                   - var range = matches?matches[1]:ranges[j];
                   a(href=ranges[j],role="button",class=["btn","btn-default","btn-xs"])=range
                   &nbsp;
+
+        .col-lg-12
+          h2 Misc
+            - var misc = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#NamedIndividual"]);
+            - for (var i = 0 ; i < misc.length ; i ++) 
+              - var matches = /[^#]+[#\/](.+)/.exec(misc[i]);
+              - var name = matches?matches[1]:misc[i];
+              - var comment = triples.getOneOfTheseLiterals(misc[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
+              h3(id=name)
+                a(href=misc[i])=name
+              p= comment
+
       .footer
         p &copy 2013 MMLab - Ghent University - Visit our  
           a(href='http://semweb.mmlab.be/') website 

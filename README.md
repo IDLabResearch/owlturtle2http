@@ -25,3 +25,32 @@ Content negotiation: `application/json`, `application/ttl` and `text/html`
 see for example: http://semweb.mmlab.be/ns/rml/
 
 Or on your own install: http://localhost:8080/ns/rml/
+
+# On an apache server
+
+```bash
+a2enmod proxy_http
+a2enmod proxy
+# Insert These 2 lines in your sites_available/000-default 
+#> ProxyRequests On
+#> ProxyPassReverse /      http://localhost:8080/
+# Restart your apache
+sudo service apache restart
+
+```
+
+Add this .htaccess in the right directory:
+```htaccess
+ Options +FollowSymLinks -Indexes -MultiViews
+    
+ <IfModule mod_rewrite.c>
+        
+ 	RewriteEngine on
+        
+        # Simple URL redirect:
+        RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^(.*) http://localhost:8080/ns/$1 [P]
+
+</IfModule>
+```
