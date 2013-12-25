@@ -34,7 +34,7 @@ html(lang="en")
             - for (var i = 0 ; i < classes.length ; i ++) 
               - var matches = /[^#]+[#\/](.+)/.exec(classes[i]);
               - var name = matches?matches[1]:classes[i];
-              - var comment = triples.getLiterals(classes[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
+              - var comment = triples.getOneOfTheseLiterals(classes[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
               h3(id=name)
                 a(href=classes[i])=name
               p= comment
@@ -46,9 +46,28 @@ html(lang="en")
               - var name = matches?matches[1]:properties[i];
               h3(id=name)
                 a(href=properties[i])=name
-              -var comment = triples.getLiterals(properties[i],"http://www.w3.org/2000/01/rdf-schema#comment")[0];
-              p= comment 
+              - var comment = triples.getOneOfTheseLiterals(properties[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
+              p= comment
+              - var ranges = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#range"]);
+              - var domains = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#domain"]);
+              .domain 
+                label Domain:
+                &nbsp;
+                - for (var j = 0; j < domains.length; j++)
+                  - var matches =  /[^#]+[#\/](.+)/.exec(domains[j])
+                  - var domain = matches?matches[1]:domains[j];
+                  a(href=domains[j],role="button",class=["btn","btn-default","btn-xs"])=domain
+                  &nbsp;
+
+              .range 
+                label Range:
+                &nbsp;
+                - for (var j = 0; j < ranges.length; j++)
+                  - var matches =  /[^#]+[#\/](.+)/.exec(ranges[j])
+                  - var range = matches?matches[1]:ranges[j];
+                  a(href=ranges[j],role="button",class=["btn","btn-default","btn-xs"])=range
+                  &nbsp;
       .footer
-        p &copy 2013 MMLab - Ghent University - Written by 
-          a(href='mailto:pieter.colpaert@ugent.be') Pieter Colpaert 
+        p &copy 2013 MMLab - Ghent University - Visit our  
+          a(href='http://semweb.mmlab.be/') website 
         
