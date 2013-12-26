@@ -22,9 +22,9 @@ Content negotiation: `application/json`, `application/ttl` and `text/html`
 
 ## Demo
 
-see for example: http://semweb.mmlab.be/ns/rml/
+see for example: http://semweb.mmlab.be/ns/apps4X
 
-Or on your own install: http://localhost:8080/ns/rml/
+Or on your own install: http://localhost:8080/ns/apps4X/
 
 # On an apache server
 

@@ -45,7 +45,7 @@ server.get('/ns/', function (req,res) {
 /**
  * Respond with all triples
  */
-server.get('/ns/:name', function (req, res) {
+server.get('/ns/:name/?', function (req, res) {
   var name = req.route.params.name;
   //check if name exists on the directory
   fs.exists(name, function(exists) {
