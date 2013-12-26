@@ -4,14 +4,14 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ql: <http://mmlab.be/ql#> .
-@prefix rml: <http://localhost:8080/rml/> .
+@prefix rml: <http://semweb.mmlab.be/rml/> .
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix : <http://localhost:8080/ns/rml/> .
-@base <http://localhost:8080/ns/rml/> .
+@prefix : <http://semweb.mmlab.be/ns/rml/> .
+@base <http://semweb.mmlab.be/ns/rml/> .
 
 <> 	rdf:type owl:Ontology ;
 	rdf:type <http://purl.org/vocommons/voaf#Vocabulary> ;
@@ -24,7 +24,7 @@
       	     [ foaf:name "Anastasia Dimou" ], [ foaf:name "Miel Vander Sande"];
 	cc:license <http://creativecommons.org/licenses/by/3.0/> ;
 	vann:preferredNamespacePrefix "rml" ;
-	vann:preferredNamespaceUri "http://localhost:8080/ns/rml/";
+	vann:preferredNamespaceUri "http://semweb.mmlab.be/ns/rml/";
       owl:imports <http://www.w3.org/ns/r2rml#>.
         
 
