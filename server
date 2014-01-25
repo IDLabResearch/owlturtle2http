@@ -52,7 +52,7 @@ server.get('/ns/:name/?', function (req, res) {
       //handle file through nodejs
       if (typeof files[name]  !== 'undefined') {
         var file = files[name];
-        var format = req.accepts('text/html','application/ttl','application/json');
+        var format = req.accepts('text/html','text/turtle','application/json');
         if ( format === "text/html" ) {
           getTriples(file, function(triples){
             res.send(owl2html(triples));
