@@ -5,6 +5,7 @@ It's really what the name says: you can make an HTTP interface for the URIs of a
 ## installing
 
 Be sure to have nodejs installed.
+If you install nodejs from package manager consider https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
 
 ```bash
 cd owlturtle2http/
