@@ -56,7 +56,7 @@ html(lang="en")
                 - for (var j = 0; j < domains.length; j++)
                   - var matches =  /[^#]+[#\/](.+)/.exec(domains[j])
                   - var domain = matches?matches[1]:domains[j];
-                  a(href=domains[j],role="button",class=["btn","btn-default","btn-xs"])=domain
+                  a(href=domains[j])=domain
                   &nbsp;
 
               .range 
@@ -65,7 +65,7 @@ html(lang="en")
                 - for (var j = 0; j < ranges.length; j++)
                   - var matches =  /[^#]+[#\/](.+)/.exec(ranges[j])
                   - var range = matches?matches[1]:ranges[j];
-                  a(href=ranges[j],role="button",class=["btn","btn-default","btn-xs"])=range
+                  a(href=ranges[j])=range
                   &nbsp;
 
         .col-lg-12

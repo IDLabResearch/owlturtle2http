@@ -1,4 +1,4 @@
-#!/usr/bin/env nodejs
+#!/usr/bin/env node
 
 /**
  * Configuration
@@ -52,12 +52,12 @@ server.get('/ns/:name/?', function (req, res) {
       //handle file through nodejs
       if (typeof files[name]  !== 'undefined') {
         var file = files[name];
-        var format = req.accepts('text/html','text/turtle','application/json');
+        var format = req.accepts('text/html','application/ttl','application/json');
         if ( format === "text/html" ) {
           getTriples(file, function(triples){
             res.send(owl2html(triples));
           });
-        } else if ( format === "text/turtle" ) {
+        } else if ( format === "application/ttl" ) {
           var turtleStream = fs.createReadStream(file);
           res.download(file, name + ".ttl");
         } else if ( format === "application/json" ) {
@@ -65,7 +65,7 @@ server.get('/ns/:name/?', function (req, res) {
             res.send(triples);
           });
         } else {
-          res.status(406).send("Not acceptable. We do accept: text/html, text/turtle and application/json");
+          res.status(406).send("Not acceptable. We do accept: text/html, application/ttl and application/json");
         }
       } else {
         res.status(404).send("Nothing here");
