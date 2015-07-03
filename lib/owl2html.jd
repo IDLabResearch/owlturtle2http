@@ -34,9 +34,10 @@ html(lang="en")
             - for (var i = 0 ; i < classes.length ; i ++) 
               - var matches = /[^#]+[#\/](.+)/.exec(classes[i]);
               - var name = matches?matches[1]:classes[i];
+              - var label = triples.getOneOfTheseLiterals(classes[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
               - var comment = triples.getOneOfTheseLiterals(classes[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
               h3(id=name)
-                a(href=classes[i])=name
+                a(href=classes[i])=label
               p= comment
         .col-lg-12
           h2 Properties
@@ -44,8 +45,10 @@ html(lang="en")
             - for (var i = 0 ; i < properties.length ; i ++)
               - var matches = /[^#]+[#\/](.+)/.exec(properties[i]);
               - var name = matches?matches[1]:properties[i];
+              - var label = triples.getOneOfTheseLiterals(properties[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
+
               h3(id=name)
-                a(href=properties[i])=name
+                a(href=properties[i])=label
               - var comment = triples.getOneOfTheseLiterals(properties[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
               p= comment
               - var ranges = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#range"]);
@@ -69,17 +72,18 @@ html(lang="en")
                   &nbsp;
 
         .col-lg-12
-          h2 Misc
-            - var misc = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#NamedIndividual"]);
-            - for (var i = 0 ; i < misc.length ; i ++) 
-              - var matches = /[^#]+[#\/](.+)/.exec(misc[i]);
-              - var name = matches?matches[1]:misc[i];
-              - var comment = triples.getOneOfTheseLiterals(misc[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
-              h3(id=name)
-                a(href=misc[i])=name
-              p= comment
+          - var misc = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#NamedIndividual"]);
+          - if (misc.length > 0)
+            h2 Misc
+              - for (var i = 0 ; i < misc.length ; i ++) 
+                - var matches = /[^#]+[#\/](.+)/.exec(misc[i]);
+                - var name = matches?matches[1]:misc[i];
+                - var comment = triples.getOneOfTheseLiterals(misc[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
+                h3(id=name)
+                  a(href=misc[i])=name
+                p= comment
 
       .footer
-        p &copy 2013 MMLab - Ghent University - Visit our  
-          a(href='http://semweb.mmlab.be/') website 
+        p &copy 2013-2015 MMLab - Ghent University - Visit our  
+          a(href='http://semweb.mmlab.be/') website
         
