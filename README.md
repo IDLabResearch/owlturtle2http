@@ -55,3 +55,7 @@ Add this .htaccess in the right directory:
 
 </IfModule>
 ```
+
+# License
+
+MIT
