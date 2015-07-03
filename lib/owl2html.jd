@@ -37,7 +37,8 @@ html(lang="en")
               - var label = triples.getOneOfTheseLiterals(classes[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
               - var comment = triples.getOneOfTheseLiterals(classes[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
               h3(id=name)
-                a(href=classes[i])=label
+                a(href=classes[i])=name
+              p(class="smalllabels")=label
               p= comment
         .col-lg-12
           h2 Properties
@@ -48,7 +49,8 @@ html(lang="en")
               - var label = triples.getOneOfTheseLiterals(properties[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
 
               h3(id=name)
-                a(href=properties[i])=label
+                a(href=properties[i])=name
+              p(class="smalllabels")=label
               - var comment = triples.getOneOfTheseLiterals(properties[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
               p= comment
               - var ranges = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#range"]);
