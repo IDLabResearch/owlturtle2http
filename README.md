@@ -19,7 +19,7 @@ After this, the server will be running on port 8080. You can change this in the 
 
 configure the `server` file with a link to your ttl file
 
-Content negotiation: `application/json`, `application/ttl` and `text/html`
+Content negotiation: `application/json`, `text/turtle` and `text/html`
 
 ## Demo
 
