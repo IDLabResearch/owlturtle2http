@@ -15,6 +15,8 @@ npm install
 
 After this, the server will be running on port 8080. You can change this in the file `server`
 
+Make sure you have RDFLIB ^4.2.1 installed (yes, a python library, we are very sorry)
+
 ## Usage
 
 configure the `server` file with a link to your ttl file

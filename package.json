@@ -1,7 +1,25 @@
 {
+  "name": "owlturtle2http",
+  "description": "Serving your turtle ontologies: a nice way",
+  "version": "0.2.0",
+  "main": "serve",
+  "author": "Pieter Colpaert",
+  "contributors": [
+    "Pieter Colpaert",
+    "Ben De Meester"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmlab/owlturtle2http.git"
+  },
+  "bugs": "https://github.com/mmlab/owlturtle2http/issues",
   "dependencies": {
-    "n3": "~0.2.1",
+    "argparse": "^1.0.7",
+    "async": "^1.5.2",
     "express": "~3.4.7",
-    "jade": "~0.35.0"
+    "jade": "^1.11.0",
+    "n3": "~0.2.1",
+    "ncp": "^2.0.0"
   }
 }
