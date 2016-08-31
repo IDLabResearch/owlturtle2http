@@ -9,7 +9,7 @@ There are two main scripts in this repo:
     a generation script that uses your turtle file to generate the files in `application/json`, `text/turtle`, `application/rdf+xml` and `text/html`,
     and accompanying `.htaccess` to support content negotiation.
 
-The latter needs an additional web server (such as Apache) to actually serve your files.
+The latter needs an additional Apache web server to actually serve your files.
 
 ## installing
 
