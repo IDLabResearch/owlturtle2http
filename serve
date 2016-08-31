@@ -8,7 +8,10 @@ var fs = require("fs"),
     owl2html = require('./lib/owl2html.js'),
     async = require('async'),
     ArgumentParser = require('argparse').ArgumentParser,
-    exec = require('child_process').exec;
+    rdfExt = require('rdf-ext'),
+    exec = require('child_process').exec,
+    N3Parser = require('rdf-parser-n3'),
+    XMLSerializer = require('rdf-serializer-xml');
 
 var packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json')));
 
@@ -20,9 +23,9 @@ var parser = new ArgumentParser({
 parser.addArgument(
     ['-o', '--ontology'],
     {
-        help: 'name of the turtle file you want to serve, as specified in the config file\n' +
-        'If provided, the version can also be added (e.g., "apps4X:0.4", if so, the turtle file will also be published under apps4X/0.4/\n' +
-        'the name of the turtle CANNOT be `assets` (as all site assets reside in the `assets`-folder)'
+        help: 'label of the turtle file you want to serve, as specified in the config file. ' +
+        'If provided, the version can also be added (e.g., "apps4X:0.4", if so, the turtle file will also be published under apps4X/0.4/. ' +
+        'The name of the turtle CANNOT be `assets` (as all site assets reside in the `assets`-folder)'
     }
 );
 parser.addArgument(
@@ -35,7 +38,7 @@ parser.addArgument(
 parser.addArgument(
     ['-i', '--index'],
     {
-        help: '(re-)render the index. Don\'t do this if you have your own index!\n' +
+        help: '(re-)render the index.html file. Don\'t do this if you have your own index.html file!\n' +
         'PS: this actually tries to be smart, and links to all subfolders that have a .htaccess file in them, so is not necessarily depending on config.files',
         action: 'storeTrue'
     }
@@ -159,14 +162,29 @@ function serve(name, file, version, cb) {
         function (done) {
             // OWL
             var oPath = path.resolve(outpath, name, name + '.owl');
-            exec('python ./lib/ttl2xml.py ' + file, function (err, stdout, stderr) {
-                fs.writeFile(oPath, stdout, function () {
-                    if (version) {
-                        fs.writeFile(path.resolve(outpath, name, version, name + '.owl'), stdout, done);
-                    }
-                    else {
-                        done();
-                    }
+            rdfExt.parsers = rdfExt.parsers || new rdfExt.Parsers();
+            rdfExt.serializers = rdfExt.serializers || new rdfExt.Serializers();
+            rdfExt.parsers['text/turtle'] = N3Parser;
+            rdfExt.serializers['application/rdf+xml'] = XMLSerializer;
+            fs.readFile(file, 'utf8', function (err, data) {
+                if (err) {
+                    return done(err);
+                }
+                rdfExt.parsers.parse('text/turtle', data).then(function (graph) {
+                    rdfExt.serializers.serialize('application/rdf+xml', graph).then(function (string) {
+                        fs.writeFile(oPath, string, function () {
+                            if (version) {
+                                fs.writeFile(path.resolve(outpath, name, version, name + '.owl'), string, done);
+                            }
+                            else {
+                                done();
+                            }
+                        });
+                    }).catch(function (err) {
+                        done(err)
+                    });
+                }).catch(function (err) {
+                    done(err)
                 });
             });
         },
@@ -201,7 +219,7 @@ function serve(name, file, version, cb) {
         }
 
     ], function (err, results) {
-        fs.readFile(path.resolve(__dirname, './lib/.htaccess.example'), 'utf8', function (err, htAccess) {
+        fs.readFile(path.resolve(__dirname, './lib/.htaccess.template'), 'utf8', function (err, htAccess) {
             htAccess = htAccess.replace(/%%NAME%%/g, name);
             fs.writeFile(path.resolve(outpath, name, '.htaccess'), htAccess.replace(/%%BASE%%/g, config.namespaceBase + name), function () {
                 if (version) {
