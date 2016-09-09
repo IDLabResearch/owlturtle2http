@@ -1,12 +1,12 @@
-doctype 5
+doctype html
 html(lang="en")
   head
     title=pageTitle
-    link(rel='stylesheet', href='./assets/css/bootstrap.min.css')
-    link(rel='stylesheet', href='./assets/css/bootstrap-theme.min.css')
-    link(rel='stylesheet', href='./assets/css/style.css')
+    link(rel='stylesheet', href='../assets/css/bootstrap.min.css')
+    link(rel='stylesheet', href='../assets/css/bootstrap-theme.min.css')
+    link(rel='stylesheet', href='../assets/css/style.css')
     script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
-    script(src='./assets/js/bootstrap.min.js')
+    script(src='../assets/js/bootstrap.min.js')
   body
     .container
       .header
@@ -15,11 +15,13 @@ html(lang="en")
         p(class=lead)= description
         - if (ontology.issued)
           p(id="issued",class="col-lg-6")
-            label issued: 
+            label issued:
+            | &nbsp;
             =ontology.issued
         - if (ontology.modified)
           p(id="modified",class="col-lg-6")
-            label modified: 
+            label modified:
+            | &nbsp;
             =ontology.modified
       div(class=['row','marketing'])
         .col-lg-12
@@ -30,48 +32,48 @@ html(lang="en")
 
         .col-lg-12
           h2 Classes
-            - var classes = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#Class", "http://www.w3.org/2000/01/rdf-schema#Class"]);
-            - for (var i = 0 ; i < classes.length ; i ++) 
-              - var matches = /[^#]+[#\/](.+)/.exec(classes[i]);
-              - var name = matches?matches[1]:classes[i];
-              - var label = triples.getOneOfTheseLiterals(classes[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
-              - var comment = triples.getOneOfTheseLiterals(classes[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
-              h3(id=name)
-                a(href=classes[i])=name
-              p(class="smalllabels")=label
-              p= comment
+          - var classes = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#Class", "http://www.w3.org/2000/01/rdf-schema#Class"]);
+          - for (var i = 0 ; i < classes.length ; i ++)
+            - var matches = /[^#]+[#\/](.+)/.exec(classes[i]);
+            - var name = matches?matches[1]:classes[i];
+            - var label = triples.getOneOfTheseLiterals(classes[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
+            - var comment = triples.getOneOfTheseLiterals(classes[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
+            h3(id=name)
+              a(href=classes[i])=name
+            p(class="smalllabels")=label
+            p= comment
         .col-lg-12
           h2 Properties
-            - var properties = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#ObjectProperty","http://www.w3.org/2002/07/owl#DatatypeProperty","http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"]);
-            - for (var i = 0 ; i < properties.length ; i ++)
-              - var matches = /[^#]+[#\/](.+)/.exec(properties[i]);
-              - var name = matches?matches[1]:properties[i];
-              - var label = triples.getOneOfTheseLiterals(properties[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
+          - var properties = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#ObjectProperty","http://www.w3.org/2002/07/owl#DatatypeProperty","http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"]);
+          - for (var i = 0 ; i < properties.length ; i ++)
+            - var matches = /[^#]+[#\/](.+)/.exec(properties[i]);
+            - var name = matches?matches[1]:properties[i];
+            - var label = triples.getOneOfTheseLiterals(properties[i], ["http://www.w3.org/2000/01/rdf-schema#label","http://purl.org/dc/terms/title","http://purl.org/dc/elements/1.1/title"]) || name;
 
-              h3(id=name)
-                a(href=properties[i])=name
-              p(class="smalllabels")=label
-              - var comment = triples.getOneOfTheseLiterals(properties[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
-              p= comment
-              - var ranges = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#range"]);
-              - var domains = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#domain"]);
-              .domain 
-                label Domain:
-                &nbsp;
-                - for (var j = 0; j < domains.length; j++)
-                  - var matches =  /[^#]+[#\/](.+)/.exec(domains[j])
-                  - var domain = matches?matches[1]:domains[j];
-                  a(href=domains[j])=domain
-                  &nbsp;
+            h3(id=name)
+              a(href=properties[i])=name
+            p(class="smalllabels")=label
+            - var comment = triples.getOneOfTheseLiterals(properties[i],["http://www.w3.org/2000/01/rdf-schema#comment","http://purl.org/dc/elements/1.1/description", "http://purl.org/dc/terms/description"]);
+            p= comment
+            - var ranges = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#range"]);
+            - var domains = triples.getAllOfTheseObjects(properties[i], ["http://www.w3.org/2000/01/rdf-schema#domain"]);
+            .domain
+              label Domain:
+              | &nbsp;
+              - for (var j = 0; j < domains.length; j++)
+                - var matches =  /[^#]+[#\/](.+)/.exec(domains[j])
+                - var domain = matches?matches[1]:domains[j];
+                a(href=domains[j])=domain
+                | &nbsp;
 
-              .range 
-                label Range:
-                &nbsp;
-                - for (var j = 0; j < ranges.length; j++)
-                  - var matches =  /[^#]+[#\/](.+)/.exec(ranges[j])
-                  - var range = matches?matches[1]:ranges[j];
-                  a(href=ranges[j])=range
-                  &nbsp;
+              .range
+              label Range:
+              | &nbsp;
+              - for (var j = 0; j < ranges.length; j++)
+                - var matches =  /[^#]+[#\/](.+)/.exec(ranges[j])
+                - var range = matches?matches[1]:ranges[j];
+                a(href=ranges[j])=range
+                | &nbsp;
 
         .col-lg-12
           - var misc = triples.getUrisOfType(["http://www.w3.org/2002/07/owl#NamedIndividual"]);

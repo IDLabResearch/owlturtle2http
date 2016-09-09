@@ -1,4 +1,6 @@
 {
+  "outpath": "./output",
+  "namespaceBase": "/",
   "files": {
     "apps4X" : "examples/a4eulocal.ttl"
   }

@@ -1,0 +1,291 @@
+#!/usr/bin/env node
+
+var fs = require("fs"),
+    ncp = require('ncp').ncp,
+    path = require('path'),
+    jade = require('jade'),
+    n3 = require('n3'),
+    owl2html = require('./lib/owl2html.js'),
+    async = require('async'),
+    ArgumentParser = require('argparse').ArgumentParser,
+    rdfExt = require('rdf-ext'),
+    exec = require('child_process').exec,
+    N3Parser = require('rdf-parser-n3'),
+    XMLSerializer = require('rdf-serializer-xml');
+
+var packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json')));
+
+var parser = new ArgumentParser({
+    version: packageJson.version,
+    addHelp: true,
+    description: packageJson.description
+});
+parser.addArgument(
+    ['-o', '--ontology'],
+    {
+        help: 'label of the turtle file you want to serve, as specified in the config file. ' +
+        'If provided, the version can also be added (e.g., "apps4X:0.4", if so, the turtle file will also be published under apps4X/0.4/. ' +
+        'The name of the turtle CANNOT be `assets` (as all site assets reside in the `assets`-folder)'
+    }
+);
+parser.addArgument(
+    ['-a', '--all'],
+    {
+        help: '(re-)serve all turtle files in the config file',
+        action: 'storeTrue'
+    }
+);
+parser.addArgument(
+    ['-i', '--index'],
+    {
+        help: '(re-)render the index.html file. Don\'t do this if you have your own index.html file!\n' +
+        'PS: this actually tries to be smart, and links to all subfolders that have a .htaccess file in them, so is not necessarily depending on config.files',
+        action: 'storeTrue'
+    }
+);
+
+/**
+ * Configuration
+ */
+var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+
+
+if (!config.files) {
+    console.error("Please check your config file. It should contain turtle files");
+    process.exit();
+}
+var files = config.files;
+
+if (!config.outpath) {
+    console.error("Please check your config file. It should contain an output path");
+    process.exit();
+}
+var outpath = config.outpath;
+if (!(path.isAbsolute(outpath))) {
+    outpath = path.resolve(__dirname, outpath);
+}
+
+if (!(fs.existsSync(outpath))) {
+    console.error("Outpath does not exists, probably you should create a folder at " + outpath + " and copy the assets from /public there");
+    outpath = path.resolve(__dirname, outpath);
+}
+
+var args = parser.parseArgs();
+
+// intitial copy-pasting of the HTML assets
+if (!fs.existsSync(path.resolve(outpath, 'assets'))) {
+    console.log('First time copying of the html assets...');
+    fs.mkdir(path.resolve(outpath, 'assets'));
+    ncp(path.resolve(__dirname, './public/'), path.resolve(outpath, 'assets'), function (err) {
+        if (err) {
+            throw err;
+        }
+        console.log('Copying done!');
+        assetsReady();
+
+    })
+}
+else {
+    assetsReady()
+}
+
+/*****************************************************************************/
+
+function assetsReady() {
+    var oPath;
+    if (args.all) {
+        async.forEachOf(files, function (file, key, done) {
+            var oPath = file;
+            if (!path.isAbsolute(oPath)) {
+                oPath = path.resolve(__dirname, oPath);
+            }
+            serve(key, oPath, null, done);
+        }, afterServe);
+    }
+    else if (args.ontology) {
+        var name = args.ontology.split(':');
+        var version = name.length > 1 ? name[1] : null;
+        name = name[0];
+        oPath = files[name];
+        if (!path.isAbsolute(oPath)) {
+            oPath = path.resolve(__dirname, oPath);
+        }
+        serve(name, oPath, version, afterServe);
+    }
+    else {
+        afterServe();
+    }
+
+    function afterServe() {
+        if (args.index) {
+            renderIndex();
+        }
+    }
+}
+
+/**
+ * Serve!
+ * @param name
+ * @param file
+ * @param version
+ * @param cb
+ */
+function serve(name, file, version, cb) {
+    version = version || null;
+
+    if (!fs.existsSync(path.resolve(outpath, name))) {
+        fs.mkdirSync(path.resolve(outpath, name));
+    }
+
+    if (version && !fs.existsSync(path.resolve(outpath, name, version))) {
+        fs.mkdirSync(path.resolve(outpath, name, version));
+    }
+
+    async.parallel([
+        function (done) {
+            // TTL
+            var oPath = path.resolve(outpath, name, name + '.ttl');
+            fs.readFile(file, 'utf8', function (err, data) {
+                if (err) {
+                    done(err);
+                }
+                fs.writeFile(oPath, data, function () {
+                    if (version) {
+                        fs.writeFile(path.resolve(outpath, name, version, name + '.ttl'), data, done);
+                    }
+                    else {
+                        done();
+                    }
+                });
+            });
+        },
+        function (done) {
+            // OWL
+            var oPath = path.resolve(outpath, name, name + '.owl');
+            rdfExt.parsers = rdfExt.parsers || new rdfExt.Parsers();
+            rdfExt.serializers = rdfExt.serializers || new rdfExt.Serializers();
+            rdfExt.parsers['text/turtle'] = N3Parser;
+            rdfExt.serializers['application/rdf+xml'] = XMLSerializer;
+            fs.readFile(file, 'utf8', function (err, data) {
+                if (err) {
+                    return done(err);
+                }
+                rdfExt.parsers.parse('text/turtle', data).then(function (graph) {
+                    rdfExt.serializers.serialize('application/rdf+xml', graph).then(function (string) {
+                        fs.writeFile(oPath, string, function () {
+                            if (version) {
+                                fs.writeFile(path.resolve(outpath, name, version, name + '.owl'), string, done);
+                            }
+                            else {
+                                done();
+                            }
+                        });
+                    }).catch(function (err) {
+                        done(err)
+                    });
+                }).catch(function (err) {
+                    done(err)
+                });
+            });
+        },
+        function (done) {
+            // HTML
+            getTriples(file, function (triples) {
+                var oPath = path.resolve(outpath, name, name + '.html');
+                var html = owl2html(triples);
+                fs.writeFile(oPath, html, function () {
+                    if (version) {
+                        fs.writeFile(path.resolve(outpath, name, version, name + '.html'), html.replace(/\.\.\/assets\//g, '../../assets/'), done);
+                    }
+                    else {
+                        done();
+                    }
+                });
+            });
+        },
+        function (done) {
+            // JSON
+            getTriples(file, function (triples) {
+                var oPath = path.resolve(outpath, name, name + '.json');
+                fs.writeFile(oPath, JSON.stringify(triples, null, '  '), function () {
+                    if (version) {
+                        fs.writeFile(path.resolve(outpath, name, version, name + '.json'), JSON.stringify(triples, null, '  '), done);
+                    }
+                    else {
+                        done();
+                    }
+                });
+            });
+        }
+
+    ], function (err, results) {
+        fs.readFile(path.resolve(__dirname, './lib/.htaccess.template'), 'utf8', function (err, htAccess) {
+            htAccess = htAccess.replace(/%%NAME%%/g, name);
+            fs.writeFile(path.resolve(outpath, name, '.htaccess'), htAccess.replace(/%%BASE%%/g, config.namespaceBase + name), function () {
+                if (version) {
+                    fs.writeFile(path.resolve(outpath, name, version, '.htaccess'), htAccess.replace(/%%BASE%%/g, config.namespaceBase + name + '/' + version), cb);
+                }
+                else {
+                    cb();
+                }
+            });
+        });
+    });
+}
+
+/**
+ * Check whether the index is still up to date
+ */
+function renderIndex() {
+    var paths = [];
+    fs.readdir(outpath, function (err, files) {
+        async.each(files, function (file, done) {
+            fs.stat(path.resolve(outpath, file), function (err, stat) {
+                if (!stat.isDirectory()) {
+                    return done();
+                }
+                fs.stat(path.resolve(outpath, file, '.htaccess'), function (err, stats) {
+                    if (err) {
+                        if (err.code == 'ENOENT') {
+                            return done();
+                        }
+                        throw err;
+                    }
+                    if (stats.isFile()) {
+                        paths.push({
+                            path: './' + file + '/',
+                            name: file
+                        });
+                    }
+                    done();
+                });
+            });
+        }, function () {
+            var jadeTemplate = fs.readFileSync('lib/index.jd', "utf8");
+            var j = jade.compile(jadeTemplate, {pretty: true});
+            var html = j({
+                pageTitle: "Ontologies hosted by Data Science Lab",
+                description: "Ontologies hosted by Data Science Lab",
+                paths: paths,
+                currentYear: (new Date()).getFullYear()
+            });
+            fs.writeFile(path.resolve(outpath, 'index.html'), html);
+        });
+    });
+
+}
+
+/**
+ * Get all triples
+ */
+function getTriples(file, callback) {
+    var turtleStream = fs.createReadStream(file);
+    var parser = n3.StreamParser();
+    var triples = [];
+    turtleStream.pipe(parser);
+    parser.on("data", function (triple) {
+        triples.push(triple);
+    }).on("end", function () {
+        callback(triples);
+    });
+}

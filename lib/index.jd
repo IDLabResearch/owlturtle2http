@@ -1,0 +1,23 @@
+doctype html
+html(lang="en")
+  head
+    title=pageTitle
+    link(rel='stylesheet', href='./assets/css/bootstrap.min.css')
+    link(rel='stylesheet', href='./assets/css/bootstrap-theme.min.css')
+    link(rel='stylesheet', href='./assets/css/style.css')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='./assets/js/bootstrap.min.js')
+  body
+    .container
+      .header
+        h3(class='text-muted')=pageTitle
+      .row
+        .col-lg-12
+          ul(id="ontologies")
+            - for (var i = 0 ; i < paths.length; i++)
+              li
+                a(href=paths[i].path)=paths[i].name
+
+      .footer
+        p &copy; 2013-#{currentYear} Data Science Lab - Ghent University - Visit our #[a(href='http://datasciencelab.mmlab.be/') website]
+
