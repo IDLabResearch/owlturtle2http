@@ -23,6 +23,6 @@
     "ncp": "^2.0.0",
     "rdf-ext": "^0.3.0",
     "rdf-parser-n3": "^0.3.0",
-    "rdf-serializer-xml": "https://github.com/bjdmeest/rdf-serializer-xml#feature-blankNodes"
+    "rdf-serializer-xml": "https://github.com/mmlab/rdf-serializer-xml"
   }
 }
