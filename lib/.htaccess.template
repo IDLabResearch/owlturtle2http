@@ -7,6 +7,8 @@ AddType application/rdf+xml .rdf .owl
 
 AddType text/turtle .ttl
 
+AddType application/json .json
+
 # Rewrite engine setup
 RewriteEngine On
 RewriteBase %%BASE%%
@@ -15,19 +17,22 @@ RewriteBase %%BASE%%
 RewriteCond %{HTTP_ACCEPT} !application/rdf\+xml.*(text/html|application/xhtml\+xml)
 RewriteCond %{HTTP_ACCEPT} text/html [OR]
 RewriteCond %{HTTP_ACCEPT} application/xhtml\+xml
-RewriteRule ^$ %%NAME%%.html [R=303]
+RewriteRule ^$ %%NAME%%.html [L]
 
 # XML
 RewriteCond %{HTTP_ACCEPT} application/rdf\+xml
-RewriteRule ^$ %%NAME%%.owl [R=303]
+RewriteRule ^$ %%NAME%%.owl [L]
 
 # TTL
 RewriteCond %{HTTP_ACCEPT} text/turtle
-RewriteRule ^$ %%NAME%%.ttl [L,R=303]
+RewriteRule ^$ %%NAME%%.ttl [L]
 
 # JSON
 RewriteCond %{HTTP_ACCEPT} application/json
-RewriteRule ^$ %%NAME%%.json [L,R=303]
+RewriteRule ^$ %%NAME%%.json [L]
 
 # DEFAULT
-RewriteRule ^$ %%NAME%%.ttl [R=303]
+RewriteRule ^$ %%NAME%%.ttl [L]
+
+# Make sure that any suffixes (classes, properties) of the URI redirect to the base URI
+ReWriteRule !^.+\.(ttl)|(html)|(owl)|(json)$ %%BASE%%
