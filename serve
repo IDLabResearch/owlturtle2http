@@ -83,10 +83,10 @@ if (!fs.existsSync(path.resolve(outpath, 'assets'))) {
         console.log('Copying done!');
         assetsReady();
 
-    })
+    });
 }
 else {
-    assetsReady()
+    assetsReady();
 }
 
 /*****************************************************************************/
@@ -181,10 +181,10 @@ function serve(name, file, version, cb) {
                             }
                         });
                     }).catch(function (err) {
-                        done(err)
+                        done(err);
                     });
                 }).catch(function (err) {
-                    done(err)
+                    done(err);
                 });
             });
         },
