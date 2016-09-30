@@ -24,7 +24,7 @@ var server = express();
  * Get all triples
  */
 function getTriples(file, callback){
-  var turtleStream = fs.createReadStream(file);
+  var turtleStream = fs.createReadStream(file, 'utf8');
   var parser = n3.StreamParser();
   var triples = [];
   turtleStream.pipe(parser);
@@ -63,7 +63,7 @@ server.get('/ns/:name/?', function (req, res) {
             res.send(owl2html(triples));
           });
         } else if ( format === "text/turtle" ) {
-          var turtleStream = fs.createReadStream(file);
+          var turtleStream = fs.createReadStream(file, 'utf8');
           res.download(file, name + ".ttl");
         } else if ( format === "application/json" ) {
           getTriples(file, function(triples){

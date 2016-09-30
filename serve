@@ -279,7 +279,7 @@ function renderIndex() {
  * Get all triples
  */
 function getTriples(file, callback) {
-    var turtleStream = fs.createReadStream(file);
+    var turtleStream = fs.createReadStream(file, 'utf8');
     var parser = n3.StreamParser();
     var triples = [];
     turtleStream.pipe(parser);
