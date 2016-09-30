@@ -6,7 +6,8 @@
   "author": "Pieter Colpaert",
   "contributors": [
     "Pieter Colpaert",
-    "Ben De Meester"
+    "Ben De Meester",
+	"Tom De Nies"
   ],
   "license": "MIT",
   "repository": {
@@ -19,7 +20,7 @@
     "async": "^1.5.2",
     "express": "~3.4.7",
     "jade": "^1.11.0",
-    "n3": "~0.2.1",
+    "n3": "~0.8.0",
     "ncp": "^2.0.0",
     "rdf-ext": "^0.3.0",
     "rdf-parser-n3": "^0.3.0",
