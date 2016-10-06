@@ -261,7 +261,7 @@ function renderIndex() {
                 });
             });
         }, function () {
-            var jadeTemplate = fs.readFileSync('lib/index.jd', "utf8");
+            var jadeTemplate = fs.readFileSync(__dirname + '/lib/index.jd', "utf8");
             var j = jade.compile(jadeTemplate, {pretty: true});
             var html = j({
                 pageTitle: "Ontologies hosted by Data Science Lab",
